@@ -2,7 +2,7 @@ name: Mohamed's Auto Commit
 
 on:
   schedule:
-    - cron: '15 * * * *'
+    - cron: '30 * * * *'
 
 jobs:
   commit:
@@ -15,7 +15,6 @@ jobs:
         ref: main
         fetch-depth: 0
 
-
     - name: Create file and commit
       shell: pwsh
       run: |
@@ -25,15 +24,12 @@ jobs:
           "Hello, my name is Mohamed ARI" | Out-File $FILE
           "commit number: 1" | Out-File $FILE -Append
         } else {
-          # Lire le fichier et extraire le numéro
           $content = Get-Content $FILE
           $current = ($content | Select-String -Pattern "commit number: (\d+)" -AllMatches).Matches.Groups[1].Value
-
+          
           if (-Not $current) { $current = 0 }
-
           $next = [int]$current + 1
 
-          # Remplacer la ligne
           $newContent = $content -replace "commit number: \d+", "commit number: $next"
           Set-Content $FILE $newContent
         }
@@ -42,7 +38,7 @@ jobs:
         git config --global user.email "mohamed.ari1301@gmail.com"
 
         git add $FILE
-        git commit -m "Hello, my name is Mohamed ARI nice to meet you"
+        git commit -m "Hello, my name is Mohamed ARI nice to meet you" || echo "Nothing to commit"
         git push origin main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
